@@ -7,7 +7,7 @@ export const apiSlice = createApi({
   endpoints: (builder) => ({
     createUser: builder.mutation({
       query: (payload) => ({
-        url: 'api/login',
+        url: 'api/users',
         method: 'POST',
         body: payload,
         headers: {
