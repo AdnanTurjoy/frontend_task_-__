@@ -1,9 +1,9 @@
 import React, { useRef, useState } from 'react';
 
 import type { GetRef, TableColumnsType, TableColumnType } from 'antd';
-import { Avatar, Card, Dropdown, Input, Space, Table, Typography } from 'antd';
+import { Avatar, Card, Dropdown, Form, Input, Space, Table, Typography } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
-import { useDeleteUserMutation, useGetSingleUserMutation, useGetUsersQuery } from '../features/apiSlice';
+import { useDeleteUserMutation, useEditUserMutation, useGetSingleUserMutation, useGetUsersQuery } from '../features/apiSlice';
 import type { MenuProps } from 'antd';
 import { Button, Modal } from 'antd';
 import Meta from 'antd/es/card/Meta';
@@ -29,18 +29,40 @@ const Dashboard: React.FC = () => {
 		error,
 	  } = useGetUsersQuery(1)
 	  const [deleteUser, { isLoading: deleteLoading }] = useDeleteUserMutation()
+	  const [editUser, { isLoading: editLoading }] = useEditUserMutation()
 	  const [viewUser, { isLoading: viewLoading }]=useGetSingleUserMutation()
-	  const [isModalOpen, setIsModalOpen] = useState(false);
+	  const [isModalOpen, setIsModalOpen] = useState({
+		open: false,
+		type:""
+	  });
+	  const [formValues,setFormValues] = useState({name:"",job:""})
 	  const [user,setUser] = useState<DataType>({})
 
 //    console.log(users);
 
 
-
+const handleOk = async () => {
+	if(isModalOpen.type==="_EDIT"){
+		try {
+			const response = await editUser({...formValues,id:user.id}).unwrap()
+			console.log(response);
+			setIsModalOpen({open:false,type:""});
+			setFormValues({name:"",job:""})
+			
+		} catch (error) {
+			console.log(error);
+		}
+	}else{
+		setIsModalOpen({open:false,type:""});
+	}
+	
+   
+  };
 
   const handleCancel = () => {
 	setUser({})
-    setIsModalOpen(false);
+	setFormValues({})
+    setIsModalOpen({open:false,type:""});
   };
 
   const columns: TableColumnsType<DataType> = [
@@ -85,10 +107,10 @@ const Dashboard: React.FC = () => {
 		width: '30%',
 	    render: (_: any, record: DataType) => (
 		 <Space size="middle">
-		 <a onClick={() => onSingleUser(record.id)} style={{ marginRight: 8 }}>
+		 <a onClick={() => onSingleUser(record.id,"_VIEW")} style={{ marginRight: 8 }}>
               View
         </a>
-		<a onClick={() => console.log(record)} style={{ marginRight: 8 }}>
+		<a onClick={() => onSingleUser(record.id,"_EDIT")} style={{ marginRight: 8 }}>
               Edit
         </a>
 
@@ -100,6 +122,10 @@ const Dashboard: React.FC = () => {
 	  ),
 	},
   ];
+  const handleEditForm =(event: { target: { name: string; value: string; }; })=>{
+	const { name, value } = event.target;
+	setFormValues({ ...formValues, [name]: value });
+  }
   const showDeleteConfirm = (id:Number) => {
 	confirm({
 	  title: 'Are you sure delete this task?',
@@ -126,11 +152,11 @@ const Dashboard: React.FC = () => {
 		}
 	};
 
-	const onSingleUser = async (id: Number) => {
+	const onSingleUser = async (id: Number, type: string) => {
 		try {
 			const response = await viewUser(id).unwrap()
 			setUser(response.data)
-			setIsModalOpen(true);
+			setIsModalOpen({open:true,type});
 			
 		} catch (error) {
 			console.log(error);
@@ -141,7 +167,7 @@ const Dashboard: React.FC = () => {
   {isLoading ? "Loading...." : 
     <Table columns={columns} dataSource={users.data} />
   }
-  <Modal title="User" open={isModalOpen}   onCancel={handleCancel} >
+  <Modal title="User" open={isModalOpen.open} onOk={handleOk} onCancel={handleCancel} >
   <Card
     style={{ width: 450, }}
     cover={
@@ -152,11 +178,23 @@ const Dashboard: React.FC = () => {
     }
     
   >
-    <Meta
-      avatar={<Avatar src="https://xsgames.co/randomusers/avatar.php?g=pixel" />}
-      title={user.first_name}
-      description={user.email}
-    />
+	{
+		isModalOpen.type==="_EDIT" ?
+		<>
+		   <input name="name" type="text" placeholder='Your new name' onChange={handleEditForm} />
+		   <input name="job" type="text" placeholder='Your Job' onChange={handleEditForm} />
+		</>
+		:
+		<Meta
+		avatar={<Avatar src="https://xsgames.co/randomusers/avatar.php?g=pixel" />}
+		title={user.first_name}
+		description={user.email}
+	  >
+		  
+	  </Meta>
+	}
+	
+  
   </Card>
     </Modal>
   </>;

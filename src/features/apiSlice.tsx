@@ -27,10 +27,10 @@ export const apiSlice = createApi({
       invalidatesTags: ['User'],
     }),
     editUser: builder.mutation({
-      query: (payload) => ({
-        url: 'api/login',
-        method: 'PATCH',
-        body: payload,
+      query: ({id,name,job}) => ({
+        url: `/api/users/${id}`,
+        method: 'PUT',
+        body: {name,job},
         headers: {
           'Content-type': 'application/json; charset=UTF-8',
         },
