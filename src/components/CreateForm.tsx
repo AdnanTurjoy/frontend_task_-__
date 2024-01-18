@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import  { FC } from 'react';
 import { Button, Form, Input } from 'antd';
 import { useCreateUserMutation } from '../features/apiSlice';
 
@@ -21,7 +21,7 @@ const CreateForm: FC<CreateFormProps> = ({ handleCancel }) => {
     };
     try {
       const response = await createUser(formData).unwrap();
-      handleCancel();
+	  if(response) handleCancel();
 	  
     } catch (error) {
       console.log(error);

@@ -149,7 +149,6 @@ const SignUp: React.FC<AppProps> = () => {
 						name="name"
 						rules={[
 							{
-								type: "array",
 								required: true,
 								message: "Please input your Name!",
 							},

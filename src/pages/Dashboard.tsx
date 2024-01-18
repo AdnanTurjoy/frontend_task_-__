@@ -9,23 +9,21 @@ import {
   Pagination,
   Card,
   Avatar,
-  Typography,
   PaginationProps,
 } from 'antd';
-import { ExclamationCircleFilled, UserOutlined } from '@ant-design/icons';
+import { ExclamationCircleFilled } from '@ant-design/icons';
 
 import {
   useDeleteUserMutation,
   useEditUserMutation,
   useGetSingleUserMutation,
   useGetUsersByPageMutation,
-  useGetUsersQuery,
 } from '../features/apiSlice';
 import CreateForm from '../components/CreateForm';
 
 const { confirm } = Modal;
 const { Meta } = Card;
-const { Text } = Typography;
+
 
 interface DataType {
   id: number;
@@ -38,10 +36,10 @@ interface DataType {
 
 const { Search } = Input;
 const Dashboard: React.FC = () => {
-  const [deleteUser, { isLoading: deleteLoading }] = useDeleteUserMutation();
-  const [editUser, { isLoading: editLoading }] = useEditUserMutation();
-  const [viewUser, { isLoading: viewLoading }] = useGetSingleUserMutation();
-  const [getUsers, { isLoading: userLoading }] = useGetUsersByPageMutation();
+  const [deleteUser] = useDeleteUserMutation();
+  const [editUser] = useEditUserMutation();
+  const [viewUser] = useGetSingleUserMutation();
+  const [getUsers] = useGetUsersByPageMutation();
   const [isModalOpen, setIsModalOpen] = useState<{ open: boolean; type: string }>({
     open: false,
     type: '',
@@ -49,9 +47,7 @@ const Dashboard: React.FC = () => {
   const [formValues, setFormValues] = useState<{ name: string; job: string }>({ name: '', job: '' });
   const [user, setUser] = useState<DataType | null>(null);
   const [dataSource, setDataSource] = useState<DataType[]>([]);
-  const [totalPages, setTotalPages] = useState<number>(1);
   const [loading, setLoading] = useState<boolean>(false);
-  const [search, setSearch] = useState('');
   const [current, setCurrent] = useState<number>();
   const [val, setVal] = useState<string>('');
 
@@ -65,7 +61,6 @@ const Dashboard: React.FC = () => {
       const users: any = await getUsers(page);
       setDataSource(users?.data.data);
       setCurrent(users?.data.page);
-      setTotalPages(users?.data.total_pages);
       setLoading(false);
     } catch (error) {
       setLoading(false);
