@@ -84,6 +84,7 @@ const SignUp: React.FC<AppProps> = () => {
 			background: "#F0F5FA",
 			paddingBottom: "7px",
 			height: "44px",
+			color: "#8A94A6"
 		},
 		line: {
 			height: "2px",
