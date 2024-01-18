@@ -105,8 +105,8 @@ const SignUp: React.FC<AppProps> = () => {
 					<Flex justify="space-between" align="center" style={{ marginTop: "17px" }}>
 
 
-						<Button style={styles.socialBtn} type="outline"><GoogleOutlined /> Sign In with Google</Button>
-						<Button style={styles.socialBtn} type="outline"><AppleOutlined /> Sign In with Apple ID</Button>
+						<Button style={styles.socialBtn} type="primary"><GoogleOutlined style={{color:"black"}} /> Sign In with Google</Button>
+						<Button style={styles.socialBtn} type="primary"><AppleOutlined style={{color:"black"}} /> Sign In with Apple ID</Button>
 
 					</Flex>
 
@@ -149,7 +149,7 @@ const SignUp: React.FC<AppProps> = () => {
 						name="name"
 						rules={[
 							{
-								type: "text",
+								type: "array",
 								required: true,
 								message: "Please input your Name!",
 							},
@@ -194,7 +194,7 @@ const SignUp: React.FC<AppProps> = () => {
 						<Button disabled={isLoading} style={{ height: "38px" }} block={true} type="primary" htmlType="submit">
 							 {isLoading ? "Signing up...." : "Sign Up"}
 						</Button>
-						<div style={styles.footer}>
+						<div style={{marginTop:"15px"}}>
 							<Text style={styles.text}>Already have an account? </Text>{" "}
 							
 							<NavLink to={"/login"}><Link>Sign In</Link></NavLink>

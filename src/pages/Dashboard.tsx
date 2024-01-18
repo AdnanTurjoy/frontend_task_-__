@@ -1,7 +1,19 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Modal, Form, Input, Button, Table, Space, Pagination, Card, Avatar, Typography, PaginationProps } from 'antd';
+import {
+  Modal,
+  Form,
+  Input,
+  Button,
+  Table,
+  Space,
+  Pagination,
+  Card,
+  Avatar,
+  Typography,
+  PaginationProps,
+} from 'antd';
 import { ExclamationCircleFilled, UserOutlined } from '@ant-design/icons';
-import { GetRef } from 'antd/lib/input';
+
 import {
   useDeleteUserMutation,
   useEditUserMutation,
@@ -23,7 +35,7 @@ interface DataType {
   last_name: string;
 }
 
-type InputRef = GetRef<typeof Input>;
+
 const { Search } = Input;
 const Dashboard: React.FC = () => {
   const [deleteUser, { isLoading: deleteLoading }] = useDeleteUserMutation();
@@ -35,25 +47,24 @@ const Dashboard: React.FC = () => {
     type: '',
   });
   const [formValues, setFormValues] = useState<{ name: string; job: string }>({ name: '', job: '' });
-  const [user, setUser] = useState<DataType>({});
+  const [user, setUser] = useState<DataType | null>(null);
   const [dataSource, setDataSource] = useState<DataType[]>([]);
   const [totalPages, setTotalPages] = useState<number>(1);
   const [loading, setLoading] = useState<boolean>(false);
-  const [search,setSearch] = useState('')
-  const [ current,setCurrent] = useState()
-  const [val, setVal] = useState('')
+  const [search, setSearch] = useState('');
+  const [current, setCurrent] = useState<number>();
+  const [val, setVal] = useState<string>('');
+
   useEffect(() => {
     fetchRecords(1);
   }, []);
 
-
-
   const fetchRecords = async (page: number) => {
     setLoading(true);
     try {
-      const users = await getUsers(page);
+      const users: any = await getUsers(page);
       setDataSource(users?.data.data);
-	  setCurrent(users?.data.page)
+      setCurrent(users?.data.page);
       setTotalPages(users?.data.total_pages);
       setLoading(false);
     } catch (error) {
@@ -64,7 +75,7 @@ const Dashboard: React.FC = () => {
   const handleOk = async () => {
     if (isModalOpen.type === '_EDIT') {
       try {
-        const response = await editUser({ ...formValues, id: user.id }).unwrap();
+        const response = await editUser({ ...formValues, id: user?.id }).unwrap();
         console.log(response);
         setIsModalOpen({ open: false, type: '' });
         setFormValues({ name: '', job: '' });
@@ -77,28 +88,42 @@ const Dashboard: React.FC = () => {
   };
 
   const handleCancel = () => {
-    setUser({});
+    setUser({
+      id: 0,
+      email: '',
+      avatar: '',
+      first_name: '',
+      last_name: '',
+    });
     setFormValues({ name: '', job: '' });
     setIsModalOpen({ open: false, type: '' });
   };
-  const filterVals = useCallback((e) => {
-    const currValue = e.target.value
-    setVal(currValue)
-    const filteredVals = dataSource.filter(entry =>
-      entry.first_name.includes(currValue)
-    )
-    setDataSource(filteredVals)
-  }, [loading])
-  const columns = [
 
+  const filterVals = useCallback(
+    (e: { target: { value: string } }) => {
+      const currValue = e.target.value;
+      setVal(currValue);
+      const filteredVals = dataSource.filter((entry) =>
+        entry.first_name.includes(currValue)
+      );
+      setDataSource(filteredVals);
+    },
+    [loading]
+  );
+
+  const columns = [
     {
       title: 'Avatar',
       dataIndex: 'avatar',
       key: 'avatar',
       width: '20%',
-      render: (_, { avatar }) => (
+      render: (_: any, { avatar }: DataType) => (
         <>
-          <img style={{ borderRadius: '50%', height: '45px', width: '45px' }} src={avatar} alt="" />
+          <img
+            style={{ borderRadius: '50%', height: '45px', width: '45px' }}
+            src={avatar}
+            alt=""
+          />
         </>
       ),
     },
@@ -190,16 +215,6 @@ const Dashboard: React.FC = () => {
     fetchRecords(page);
   };
 
-  const onSearch=(data:string)=>{
-	
-	console.log(dataSource?.filter((datum:DataType)=>datum.first_name.toLowerCase().includes(data!==null?data:'')));
-    setDataSource(dataSource?.filter((item) => {
-		return data.toLowerCase() === ''
-		  ? item
-		  : item.first_name.toLowerCase().includes(data);
-	  }))
-  }
-
   return (
     <>
       <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
@@ -207,9 +222,13 @@ const Dashboard: React.FC = () => {
           Create
         </Button>
       </Form.Item>
-	  <Search  placeholder="lalaland"
-			value={val}
-			onChange={filterVals} style={{ marginBottom: '10px' }} placeholder="...search name" loading={false} />
+      <Search
+        value={val}
+        onChange={filterVals}
+        style={{ marginBottom: '10px' }}
+        placeholder="...search name"
+        loading={false}
+      />
 
       <Table loading={loading} columns={columns} dataSource={dataSource} pagination={false}></Table>
       <Pagination
@@ -231,7 +250,10 @@ const Dashboard: React.FC = () => {
           } : {},
         }}
       >
-        <Card style={{ width: 450 }} cover={isModalOpen.type !== '_CREATE' && <img alt="avatar" src={user.avatar} />}>
+        <Card
+          style={{ width: 450 }}
+          cover={isModalOpen.type !== '_CREATE' && <img alt="avatar" src={user?.avatar} />}
+        >
           {isModalOpen.type === '_EDIT' ? (
             <>
               <input name="name" type="text" placeholder="Your new name" onChange={handleEditForm} />
@@ -240,11 +262,11 @@ const Dashboard: React.FC = () => {
           ) : isModalOpen.type === '_VIEW' ? (
             <Meta
               avatar={<Avatar src="https://xsgames.co/randomusers/avatar.php?g=pixel" />}
-              title={user.first_name}
-              description={user.email}
+              title={user?.first_name}
+              description={user?.email}
             />
           ) : (
-            <CreateForm />
+            <CreateForm handleCancel={handleCancel}/>
           )}
         </Card>
       </Modal>

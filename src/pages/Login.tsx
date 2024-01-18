@@ -12,7 +12,7 @@ import {
 import { AppleOutlined, GoogleOutlined  } from "@ant-design/icons";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { useSignInPostMutation, useSignUpPostMutation } from "../features/apiSlice";
+import { useSignInPostMutation } from "../features/apiSlice";
 import { setCredentials } from "../features/authSlice";
 
 const { useToken } = theme;
@@ -53,7 +53,7 @@ const Login: React.FC<AppProps> = () => {
       width: "400px",
     },
     footer: {
-      marginTop: token.marginLG,
+      marginTop: "15px",
       textAlign: "center",
       width: "100%",
     },
@@ -85,6 +85,7 @@ const Login: React.FC<AppProps> = () => {
       background: "#F0F5FA",
       paddingBottom:"7px",
       height: "44px",
+      color: "#8A94A6"
     },
     line:{
       height: "2px",
@@ -105,8 +106,8 @@ const Login: React.FC<AppProps> = () => {
           <Flex justify="space-between" align="center" style={{marginTop: "17px"}}>
 
 
-            <Button style={styles.socialBtn} type="outline"><GoogleOutlined /> Sign In with Google</Button>
-            <Button style={styles.socialBtn} type="outline"><AppleOutlined /> Sign In with Apple ID</Button>
+            <Button style={styles.socialBtn} type="primary"><GoogleOutlined style={{color:"black"}}/> Sign In with Google</Button>
+            <Button style={styles.socialBtn} type="primary"><AppleOutlined style={{color:"black"}}/> Sign In with Apple ID</Button>
 
           </Flex>
 
@@ -171,7 +172,7 @@ const Login: React.FC<AppProps> = () => {
             <Button style={{height:"38px"}} block={true} type="primary" htmlType="submit">
             {isLoading ? "Signing in...." : "Sign In"}
             </Button>
-            <div style={styles.footer}>
+            <div style={{marginTop:"15px"}}>
               <Text style={styles.text}>Don't have an account?</Text>{" "}
               
               <NavLink to={"/register"}><Link >Sign up now</Link></NavLink>

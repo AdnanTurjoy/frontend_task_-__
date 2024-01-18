@@ -1,9 +1,7 @@
 // Author: Adel Md. Adnan
 // Date: 18-01-24
 
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+
 import './App.css'
 import Login from './pages/Login'
 import SignUp from './pages/SignUp'
@@ -12,7 +10,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import PrivateRoutes from './utils/PrivateRoutes'
 
 function App() {
-  const [count, setCount] = useState(0)
+
 
   return (
     <div className="App">
@@ -20,7 +18,7 @@ function App() {
           <Routes>
             {/* Protected Route */}
             <Route element={<PrivateRoutes />}>
-              <Route element={<Dashboard/>} path="/" exact/>
+              <Route element={<Dashboard/>} path="/"/>
             </Route>
         
             <Route element={<Login/>} path="/login"/>
