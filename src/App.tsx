@@ -1,3 +1,6 @@
+// Author: Adel Md. Adnan
+// Date: 18-01-24
+
 import { useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
@@ -15,10 +18,11 @@ function App() {
     <div className="App">
         <Router>
           <Routes>
+            {/* Protected Route */}
             <Route element={<PrivateRoutes />}>
-                
+              <Route element={<Dashboard/>} path="/" exact/>
             </Route>
-            <Route element={<Dashboard/>} path="/" exact/>
+        
             <Route element={<Login/>} path="/login"/>
             <Route element={<SignUp/>} path="/register"/>
           </Routes>
