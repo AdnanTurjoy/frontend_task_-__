@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Modal, Form, Input, Button, Table, Space, Pagination, Card, Avatar, Typography, PaginationProps } from 'antd';
 import { ExclamationCircleFilled, UserOutlined } from '@ant-design/icons';
 import { GetRef } from 'antd/lib/input';
@@ -39,12 +39,14 @@ const Dashboard: React.FC = () => {
   const [dataSource, setDataSource] = useState<DataType[]>([]);
   const [totalPages, setTotalPages] = useState<number>(1);
   const [loading, setLoading] = useState<boolean>(false);
-
+  const [search,setSearch] = useState('')
   const [ current,setCurrent] = useState()
-  
+  const [val, setVal] = useState('')
   useEffect(() => {
     fetchRecords(1);
   }, []);
+
+
 
   const fetchRecords = async (page: number) => {
     setLoading(true);
@@ -79,8 +81,16 @@ const Dashboard: React.FC = () => {
     setFormValues({ name: '', job: '' });
     setIsModalOpen({ open: false, type: '' });
   };
-
+  const filterVals = useCallback((e) => {
+    const currValue = e.target.value
+    setVal(currValue)
+    const filteredVals = dataSource.filter(entry =>
+      entry.first_name.includes(currValue)
+    )
+    setDataSource(filteredVals)
+  }, [loading])
   const columns = [
+
     {
       title: 'Avatar',
       dataIndex: 'avatar',
@@ -183,7 +193,11 @@ const Dashboard: React.FC = () => {
   const onSearch=(data:string)=>{
 	
 	console.log(dataSource?.filter((datum:DataType)=>datum.first_name.toLowerCase().includes(data!==null?data:'')));
-    setDataSource(dataSource?.filter((datum:DataType)=>datum.first_name.toLowerCase().includes(data!==null?data:'')))
+    setDataSource(dataSource?.filter((item) => {
+		return data.toLowerCase() === ''
+		  ? item
+		  : item.first_name.toLowerCase().includes(data);
+	  }))
   }
 
   return (
@@ -193,7 +207,9 @@ const Dashboard: React.FC = () => {
           Create
         </Button>
       </Form.Item>
-	  <Search enterButton={true} onSearch={onSearch} style={{ marginBottom: '10px' }} placeholder="...search name" loading={false} />
+	  <Search  placeholder="lalaland"
+			value={val}
+			onChange={filterVals} style={{ marginBottom: '10px' }} placeholder="...search name" loading={false} />
 
       <Table loading={loading} columns={columns} dataSource={dataSource} pagination={false}></Table>
       <Pagination
