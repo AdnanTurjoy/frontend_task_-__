@@ -24,7 +24,7 @@ interface DataType {
 }
 
 type InputRef = GetRef<typeof Input>;
-
+const { Search } = Input;
 const Dashboard: React.FC = () => {
   const [deleteUser, { isLoading: deleteLoading }] = useDeleteUserMutation();
   const [editUser, { isLoading: editLoading }] = useEditUserMutation();
@@ -40,6 +40,8 @@ const Dashboard: React.FC = () => {
   const [totalPages, setTotalPages] = useState<number>(1);
   const [loading, setLoading] = useState<boolean>(false);
 
+  const [ current,setCurrent] = useState()
+  
   useEffect(() => {
     fetchRecords(1);
   }, []);
@@ -48,7 +50,8 @@ const Dashboard: React.FC = () => {
     setLoading(true);
     try {
       const users = await getUsers(page);
-      setDataSource(users?.data);
+      setDataSource(users?.data.data);
+	  setCurrent(users?.data.page)
       setTotalPages(users?.data.total_pages);
       setLoading(false);
     } catch (error) {
@@ -177,6 +180,12 @@ const Dashboard: React.FC = () => {
     fetchRecords(page);
   };
 
+  const onSearch=(data:string)=>{
+	
+	console.log(dataSource?.filter((datum:DataType)=>datum.first_name.toLowerCase().includes(data!==null?data:'')));
+    setDataSource(dataSource?.filter((datum:DataType)=>datum.first_name.toLowerCase().includes(data!==null?data:'')))
+  }
+
   return (
     <>
       <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
@@ -184,11 +193,12 @@ const Dashboard: React.FC = () => {
           Create
         </Button>
       </Form.Item>
+	  <Search enterButton={true} onSearch={onSearch} style={{ marginBottom: '10px' }} placeholder="...search name" loading={false} />
 
-      <Table loading={loading} columns={columns} dataSource={dataSource?.data} pagination={false}></Table>
+      <Table loading={loading} columns={columns} dataSource={dataSource} pagination={false}></Table>
       <Pagination
         style={{ marginTop: '10px' }}
-        current={dataSource?.page}
+        current={current}
         onChange={onPageChange}
         total={50}
       />

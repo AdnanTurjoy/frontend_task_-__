@@ -16,7 +16,7 @@ function App() {
         <Router>
           <Routes>
             <Route element={<PrivateRoutes />}>
-                {/* <Route element={<Dashboard/>} path="/" exact/> */}
+                
             </Route>
             <Route element={<Dashboard/>} path="/" exact/>
             <Route element={<Login/>} path="/login"/>
