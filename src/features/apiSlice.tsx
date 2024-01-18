@@ -19,6 +19,13 @@ export const apiSlice = createApi({
     getUsers: builder.query({   
       query: (page = 1) => `api/users?page=${page}`,
     }),
+    getUsersByPage: builder.mutation({
+      query: (page) => ({
+        url: `api/users?page=${page}`,
+        method: 'GET',
+      }),
+      invalidatesTags: ['User'],
+    }),
     getSingleUser: builder.mutation({
       query: (id) => ({
         url: `/api/users/${id}`,
@@ -80,6 +87,7 @@ export const {
   useDeleteUserMutation,
   useEditUserMutation, 
   useGetUsersQuery, 
+  useGetUsersByPageMutation,
   useGetSingleUserMutation,
   useSignInPostMutation, 
   useSignUpPostMutation  

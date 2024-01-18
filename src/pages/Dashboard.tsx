@@ -1,9 +1,9 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
-import type { GetRef, TableColumnsType, TableColumnType } from 'antd';
-import { Avatar, Card, Dropdown, Form, Input, Space, Table, Typography } from 'antd';
+import type { GetRef, PaginationProps, TableColumnsType, TableColumnType } from 'antd';
+import { Avatar, Card, Dropdown, Form, Input, Pagination, Space, Table, Typography } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
-import { useDeleteUserMutation, useEditUserMutation, useGetSingleUserMutation, useGetUsersQuery } from '../features/apiSlice';
+import { useDeleteUserMutation, useEditUserMutation, useGetSingleUserMutation, useGetUsersByPageMutation, useGetUsersQuery } from '../features/apiSlice';
 import type { MenuProps } from 'antd';
 import { Button, Modal } from 'antd';
 import Meta from 'antd/es/card/Meta';
@@ -22,26 +22,38 @@ interface DataType {
 
 const Dashboard: React.FC = () => {
 	const { confirm } = Modal;
-	const {
-		data: users,
-		isLoading,
-		isSuccess,
-		isError,
-		error,
-	} = useGetUsersQuery(1)
+	
 	const [deleteUser, { isLoading: deleteLoading }] = useDeleteUserMutation()
 	const [editUser, { isLoading: editLoading }] = useEditUserMutation()
 	const [viewUser, { isLoading: viewLoading }] = useGetSingleUserMutation()
+	const [getUsers, { isLoading: userLoading }] = useGetUsersByPageMutation()
 	const [isModalOpen, setIsModalOpen] = useState({
 		open: false,
 		type: ""
 	});
 	const [formValues, setFormValues] = useState({ name: "", job: "" })
 	const [user, setUser] = useState<DataType>({})
+	const [dataSource, setDataSource] = useState([]);
+	const [totalPages, setTotalPages] = useState(1);
+	const [loading, setLoading] = useState(false);
 
-	//    console.log(users);
+	useEffect(() => {
+		fetchRecords(1);
+	  }, []);
 
-
+	  const fetchRecords = async (page) => {
+		setLoading(true);
+		try {
+			const users = await getUsers(page)
+			console.log(users.data.data)
+		    setDataSource(users?.data)
+			setTotalPages(res.data.total_pages);
+			setLoading(false);
+		} catch (error) {
+			setLoading(false);
+		}
+		
+	  };
 	const handleOk = async () => {
 		if (isModalOpen.type === "_EDIT") {
 			try {
@@ -167,7 +179,9 @@ const Dashboard: React.FC = () => {
 	const handleCreate = () => {
 		setIsModalOpen({ open: true, type: "_CREATE" });
 	}
-
+	const onPageChange: PaginationProps['onChange'] = (page) => {
+		fetchRecords(page);
+	  };
 	
 
 	return <>
@@ -176,9 +190,15 @@ const Dashboard: React.FC = () => {
 				Create
 			</Button>
 		</Form.Item>
-		{isLoading ? "Loading...." :
-			<Table columns={columns} dataSource={users.data} />
-		}
+		
+			  <Table
+			  loading={loading}
+			  columns={columns}
+			  dataSource={dataSource.data}
+			  pagination={false}
+			></Table>
+			<Pagination style={{marginTop:"10px"}} current={dataSource.page} onChange={onPageChange} total={50} />
+		
 		<Modal title="User" open={isModalOpen.open} onOk={handleOk} onCancel={handleCancel}
 			cancelButtonProps={{ style: { display: 'none' } }}
 			okButtonProps={{
